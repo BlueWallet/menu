@@ -6,7 +6,7 @@ Android PopupMenu and iOS14+ UIMenu components for react-native.
 Falls back to ActionSheet for versions below iOS14.
 
 | Android                                                                                                                        | iOS 14+                                                                                                                        | iOS 13                                                                                                                        |
-| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+|--------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | <img src="https://user-images.githubusercontent.com/6936373/112418277-827ac380-8d6c-11eb-96e2-324487ff3dde.png" width="320" /> | <img src="https://user-images.githubusercontent.com/6936373/112418272-80b10000-8d6c-11eb-9edb-f91eeff0877e.png" width="320" /> | <img src="https://user-images.githubusercontent.com/6936373/98471162-cb9f0080-222d-11eb-89ef-9342a1f10893.png" width="320" /> |
 
 ## Installation
@@ -55,6 +55,7 @@ const App = () => {
         actions={[
           {
             id: 'add',
+            title: 'Add',
             titleColor: '#2367A2',
             image: Platform.select({
               ios: 'plus',
@@ -111,7 +112,7 @@ const App = () => {
             }),
           },
         ]}
-        shouldOpenOnLongPress={true}
+        shouldOpenOnLongPress={false}
       >
         <View style={styles.button}>
           <Text style={styles.buttonText}>Test</Text>
@@ -122,6 +123,10 @@ const App = () => {
 };
 ```
 
+### Declarative usage
+
+It's also possible to obtain the `action` is a more React-ish, declarative fashion. Refer to the [`react-to-imperative`](https://github.com/vonovak/react-to-imperative?tab=readme-ov-file#why) package, and see an example [here](https://github.com/vonovak/react-navigation-header-buttons/blob/cca6ce6d04d3b106efe7aa62279101db33c7941b/example/src/screens/UsageNativeMenu.tsx#L62).
+
 ## Reference
 
 ### Props
@@ -131,15 +136,15 @@ const App = () => {
 The title of the menu.
 
 | Type   | Required |
-| ------ | -------- |
-| string | No       |
+|--------|----------|
+| string | Yes      |
 
 ### `isAnchoredToRight` (Android only)
 
 Boolean determining if menu should anchored to right or left corner of parent view.
 
 | Type    | Required |
-| ------- | -------- |
+|---------|----------|
 | boolean | No       |
 
 ### `shouldOpenOnLongPress`
@@ -147,7 +152,7 @@ Boolean determining if menu should anchored to right or left corner of parent vi
 Boolean determining if menu should open after long press or on normal press
 
 | Type    | Required |
-| ------- | -------- |
+|---------|----------|
 | boolean | No       |
 
 ### `actions`
@@ -155,8 +160,16 @@ Boolean determining if menu should open after long press or on normal press
 Actions to be displayed in the menu.
 
 | Type         | Required |
-| ------------ | -------- |
+|--------------|----------|
 | MenuAction[] | Yes      |
+
+### `themeVariant` (iOS only)
+
+String to override theme of the menu. If you want to control theme universally across your app, [see this package](https://github.com/vonovak/react-native-theme-control).
+
+| Type                  | Required |
+|-----------------------|----------|
+| enum('light', 'dark') | No       |
 
 #### `MenuAction`
 
@@ -204,7 +217,6 @@ export type MenuAction = {
    * image="plus"
    * @example // (Android)
    * image="ic_menu_add"
-   * - TODO: Allow images other than those included in SF Symbol and resources drawables
    */
   image?: string;
   /**
@@ -262,7 +274,7 @@ Callback function that will be called when selecting a menu item.
 It will contain id of the given action.
 
 | Type                    | Required |
-| ----------------------- | -------- |
+|-------------------------|----------|
 | ({nativeEvent}) => void | No       |
 
 ## Contributing

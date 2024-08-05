@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { processColor } from 'react-native';
 
 import UIMenuView from './UIMenuView';
@@ -6,7 +6,9 @@ import type {
   MenuComponentProps,
   MenuAction,
   ProcessedMenuAction,
+  NativeActionEvent,
 } from './types';
+import { objectHash } from './utils';
 
 function processAction(action: MenuAction): ProcessedMenuAction {
   return {
@@ -21,8 +23,13 @@ const MenuView: React.FC<MenuComponentProps> = ({ actions, ...props }) => {
   const processedActions = actions.map<ProcessedMenuAction>((action) =>
     processAction(action)
   );
-  return <UIMenuView {...props} actions={processedActions} />;
+  const hash = useMemo(() => {
+    return objectHash(processedActions);
+  }, [processedActions]);
+  return (
+    <UIMenuView {...props} actions={processedActions} actionsHash={hash} />
+  );
 };
 
 export { MenuView };
-export type { MenuComponentProps, MenuAction };
+export type { MenuComponentProps, MenuAction, NativeActionEvent };

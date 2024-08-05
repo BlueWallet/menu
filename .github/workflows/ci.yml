@@ -1,12 +1,16 @@
 name: Build
-on: push
+on:
+  push:
+  pull_request:
+    branches:
+      - master
 
 jobs:
   lint:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12]
+        node-version: [20]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -24,10 +28,10 @@ jobs:
       - name: ESLint Checks
         run: yarn lint
   tsc:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12]
+        node-version: [20]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -45,15 +49,18 @@ jobs:
       - name: TypeScript type check
         run: yarn typescript
   android:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12]
+        node-version: [20]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '17'
       - name: Get yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -69,7 +76,8 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        node-version: [12]
+        node-version: [20]
+        arch: ['NewArch', 'OldArch']
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -82,9 +90,13 @@ jobs:
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Get arch value
+        run: echo "RCT_NEW_ARCH_ENABLED=${{ matrix.arch == 'NewArch' && '1' || '0' }}" >> $GITHUB_ENV
       - name: Install Dependencies
         run: yarn && yarn bootstrap
       - name: Install Podfiles
         run: cd example && npx pod-install
+      - name: Print React Native Info
+        run: cd example && npx react-native info
       - name: Build example app
-        run: cd example && yarn ios
+        run: cd example && yarn ios --no-packager

@@ -4,8 +4,9 @@ import type {
   StyleProp,
   ViewStyle,
 } from 'react-native';
+import type * as React from 'react';
 
-type NativeActionEvent = {
+export type NativeActionEvent = {
   nativeEvent: {
     event: string;
   };
@@ -24,6 +25,12 @@ type MenuAttributes = {
    * An attribute indicating the hidden style.
    */
   hidden?: boolean;
+  /**
+   * (iOS16+ only)
+   * @platform iOS
+   * An attribute indicating that the menu should remain presented after firing.
+   */
+  keepsMenuPresented?: boolean;
 };
 
 /**
@@ -89,9 +96,19 @@ export type MenuAction = {
    * - On Android it does not support nesting next sub menus in sub menu item
    */
   subactions?: MenuAction[];
+  /**
+   * Whether subactions should be inline (separated by divider) or nested (sub menu)
+   */
+  displayInline?: boolean;
+  /**
+   * (iOS 16+ only)
+   * The preferred size of this menu's child elements.
+   * @platform iOS
+   */
+  preferredElementSize?: 'small' | 'medium' | 'large';
 };
 
-export type MenuComponentProps = {
+type MenuComponentPropsBase = {
   style?: StyleProp<ViewStyle>;
   /**
    * Callback function that will be called when selecting a menu item.
@@ -106,6 +123,7 @@ export type MenuComponentProps = {
    * The title of the menu.
    */
   title?: string;
+
   /**
    * (Android API 23+)
    * Boolean value determines whether popup menu should be anchored
@@ -119,7 +137,17 @@ export type MenuComponentProps = {
    * @default false
    */
   shouldOpenOnLongPress?: boolean;
+  /**
+   * Overrides theme variant of menu to light mode, dark mode or system theme
+   * (Only support iOS for now)
+   *
+   * @platform iOS
+   */
+  themeVariant?: string;
 };
+
+export type MenuComponentProps =
+  React.PropsWithChildren<MenuComponentPropsBase>;
 
 export type ProcessedMenuAction = Omit<
   MenuAction,
@@ -134,5 +162,6 @@ export type NativeMenuComponentProps = {
   style?: StyleProp<ViewStyle>;
   onPressAction?: ({ nativeEvent }: NativeActionEvent) => void;
   actions: ProcessedMenuAction[];
+  actionsHash: string;
   title?: string;
 };
